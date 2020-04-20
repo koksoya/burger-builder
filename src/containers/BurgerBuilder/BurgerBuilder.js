@@ -31,7 +31,7 @@ class BurgerBuilder extends Component {
         .catch(err => this.setState({error: true}))
     }
 
-    updatePurchaseState (ingredients) {
+    updatePurchaseState = (ingredients) => {
         const sum = Object.keys(ingredients)
             .map(key => ingredients[key])
             .reduce((sum,el) => sum+el ,0)
@@ -78,26 +78,16 @@ class BurgerBuilder extends Component {
     )
 
     purchaseContinueHandler = () => {
-        // alert('You continue!')
-        this.setState({loading: true})
-        const order = {
-            ingredients: this.state.ingredients,
-            price: this.state.totalPrice,
-            customer: {
-                name: 'Behlul Koksoya',
-                address: {
-                    street: '9 Test Street',
-                    zipCode: '539203',
-                    city: 'Toronto'
-                },
-                email: 'test@testmail.com'
-                
-            },
-            deliveryMethod: 'fastest'
+        const queryParams = []
+        for (let i in this.state.ingredients) {
+            queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]))
         }
-        axios.post('/orders.json',order)
-        .then(response => this.setState({loading:false, purchasing: false}))
-        .catch(error => this.setState({loading:false, purchasing: false}))
+        queryParams.push('price=' + this.state.totalPrice)
+        const queryString = queryParams.join('&')
+        this.props.history.push({
+            pathname: '/checkout',
+            search: '?' + queryString
+        })
 
     }
 
